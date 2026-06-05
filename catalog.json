@@ -1,5 +1,7 @@
 {
   "version": "1",
+  "appVersion": "1.0.0",
+  "appDownloadUrl": "https://github.com/chrischou0923/whitetool-catalog/releases/download/app-latest/WhiteTool.exe",
   "tools": [
     {
       "id": "seed-qtac",
