@@ -1,0 +1,105 @@
+{
+  "version": "1",
+  "tools": [
+    {
+      "id": "seed-qtac",
+      "name": "QtAC Proo (時鐘連點器)",
+      "description": "Qt 製 多主題時鐘連點器",
+      "category": "計時/節拍",
+      "fileName": "QtAC_Proo.exe",
+      "size": 35328,
+      "downloadUrl": "https://github.com/chrischou0923/whitetool-catalog/releases/download/tools/seed-qtac.zip",
+      "previewUrl": ""
+    },
+    {
+      "id": "seed-wxpro20",
+      "name": "WXclick Pro V20",
+      "description": "WXclick Pro 第 20 版面板",
+      "category": "連點器",
+      "fileName": "WXclick pro Vx20.0.exe",
+      "size": 10108416,
+      "downloadUrl": "https://github.com/chrischou0923/whitetool-catalog/releases/download/tools/seed-wxpro20.zip",
+      "previewUrl": ""
+    },
+    {
+      "id": "seed-wxv1",
+      "name": "WXclick V1",
+      "description": "舊版 WXclick",
+      "category": "連點器",
+      "fileName": "WXclickV1.exe",
+      "size": 72671098,
+      "downloadUrl": "https://github.com/chrischou0923/whitetool-catalog/releases/download/tools/seed-wxv1.zip",
+      "previewUrl": ""
+    },
+    {
+      "id": "seed-wclickv2",
+      "name": "Wclick V2",
+      "description": "Tauri 版 Wclick",
+      "category": "連點器",
+      "fileName": "WclickV2.exe",
+      "size": 4592640,
+      "downloadUrl": "https://github.com/chrischou0923/whitetool-catalog/releases/download/tools/seed-wclickv2.zip",
+      "previewUrl": ""
+    },
+    {
+      "id": "seed-wclickv1",
+      "name": "Wclick V1",
+      "description": "舊版 Wclick",
+      "category": "連點器",
+      "fileName": "WclickV1.exe",
+      "size": 862990,
+      "downloadUrl": "https://github.com/chrischou0923/whitetool-catalog/releases/download/tools/seed-wclickv1.zip",
+      "previewUrl": ""
+    },
+    {
+      "id": "seed-cps",
+      "name": "WhiteCpsClicker",
+      "description": "CPS 偵測 + 連點",
+      "category": "連點器",
+      "fileName": "WhiteCpsClicker.exe",
+      "size": 151552,
+      "downloadUrl": "https://github.com/chrischou0923/whitetool-catalog/releases/download/tools/seed-cps.zip",
+      "previewUrl": ""
+    },
+    {
+      "id": "seed-witeclick",
+      "name": "whiteclickerpython",
+      "description": "CMD UI 風格連點器",
+      "category": "CMD 工具",
+      "fileName": "whiteclickerpython.exe",
+      "size": 65564196,
+      "downloadUrl": "https://github.com/chrischou0923/whitetool-catalog/releases/download/tools/seed-witeclick.zip",
+      "previewUrl": ""
+    },
+    {
+      "id": "seed-pyclick",
+      "name": "W1TE Triggerbot",
+      "description": "色彩偵測 Triggerbot v10.8",
+      "category": "連點器",
+      "fileName": "W1TE triggerbot.exe",
+      "size": 67517745,
+      "downloadUrl": "https://github.com/chrischou0923/whitetool-catalog/releases/download/tools/seed-pyclick.zip",
+      "previewUrl": ""
+    },
+    {
+      "id": "seed-mouselock",
+      "name": "MouseLock",
+      "description": "鎖定滑鼠座標於指定位置（F1 啟動）",
+      "category": "輔助工具",
+      "fileName": "MouseLock.exe",
+      "size": 29184,
+      "downloadUrl": "https://github.com/chrischou0923/whitetool-catalog/releases/download/tools/seed-mouselock.zip",
+      "previewUrl": ""
+    },
+    {
+      "id": "seed-whitecmd",
+      "name": "whiteCMD",
+      "description": "CMD AutoClicker (C++)",
+      "category": "CMD 工具",
+      "fileName": "whiteCMD.exe",
+      "size": 1072640,
+      "downloadUrl": "https://github.com/chrischou0923/whitetool-catalog/releases/download/tools/seed-whitecmd.zip",
+      "previewUrl": ""
+    }
+  ]
+}
