@@ -16,10 +16,11 @@
  * 進階功能：
  *   - 依不同天氣，在 RGB LED 上顯示不同顏色 (晴/雲/雨/雪/雷...)
  *
- * 接線（依實際模組調整）：
- *   - I2C LCD 1602 ：SDA -> GPIO21, SCL -> GPIO22, VCC -> 5V, GND -> GND
- *   - IR 接收器     ：OUT -> GPIO15, VCC -> 3.3V, GND -> GND
- *   - RGB LED(共陰) ：R -> GPIO25, G -> GPIO26, B -> GPIO27（各串 220Ω）
+ * 接線（對應 innovati AMA-EB-04 教學板）：
+ *   - 紅外線接收器(左上 R Remote Receiver)：JP14 訊號 S -> IO15、+ -> 3V3、- -> GND
+ *   - I2C LCD 1602                       ：SDA -> IO21、SCL -> IO22、電源 JP23 -> 3V3 / GND
+ *   - RGB LED(左側 JP17，B G R，選做)     ：R -> IO25、G -> IO26、B -> IO27
+ *   （RGB LED 已在板上，不需另外串電阻）
  *
  * 需安裝的函式庫：
  *   - WiFi (內建)、HTTPClient (內建)、time/sntp (內建)
@@ -144,6 +145,7 @@ void get_weather_data(int cityIndex)
 //=============================================================================
 // 5) I2C LCD 設定 (1602)
 //=============================================================================
+#include <Wire.h>                      // I2C 通訊（指定 SDA/SCL 腳位用）
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C lcd(0x27, 16, 2);    // I2C 位址常見為 0x27 或 0x3F，依模組調整
 
@@ -366,7 +368,8 @@ void setup()
   pinMode(PIN_B, OUTPUT);
   set_rgb(0, 0, 0);
 
-  // LCD 初始化
+  // LCD 初始化（AMA-EB-04：I2C SDA=IO21、SCL=IO22）
+  Wire.begin(21, 22);    // 指定 I2C 腳位，與板上接線一致
   lcd.init();
   lcd.backlight();
   lcd_line(0, "ESP32 Weather");

@@ -22,13 +22,20 @@ ESP32 透過 WiFi 工作站(STA)模式連網，取得 NTP 時間與 OpenWeatherM
 ## 作業練習1 接線
 只要 ESP32 + WiFi，不需外接元件，結果輸出在串列埠監看視窗（鮑率 9600）。
 
-## 作業練習2 接線（可依實際模組調整）
+## 作業練習2 接線（對應 innovati AMA-EB-04 教學板）
 
-| 元件 | ESP32 接腳 |
-|------|-----------|
-| I2C LCD 1602 | SDA→GPIO21, SCL→GPIO22, VCC→5V, GND→GND |
-| 紅外線接收器 | OUT→GPIO15, VCC→3.3V, GND→GND |
-| RGB LED（共陰）| R→GPIO25, G→GPIO26, B→GPIO27（各串 220Ω）|
+板上模組已焊好，用杜邦線把各模組的 JP 針腳連到 ESP32 的 GPIO 即可：
+
+| 模組（板上位置）| 板上針腳 | 接到 ESP32 |
+|------|---------|-----------|
+| 紅外線接收器（左上 R Remote Receiver）| JP14 訊號 `S` | `IO15` |
+| 　└ 電源 | `+` / `-` | `3V3` / `GND` |
+| I2C LCD 1602 | `SDA` / `SCL` | `IO21` / `IO22` |
+| 　└ 電源（JP23）| `3V3` / `GND` | `3V3` / `GND` |
+| RGB LED（左側 JP17，`B G R`，選做）| R / G / B | `IO25` / `IO26` / `IO27` |
+
+> LCD 為 I2C 介面，程式用 `LiquidCrystal_I2C`、`Wire.begin(21, 22)`。
+> 若改用並列(16 腳)LCD，需改用 `LiquidCrystal` 函式庫。
 
 ### 遙控器按鍵功能（常見 NEC「車用 MP3」遙控器）
 
