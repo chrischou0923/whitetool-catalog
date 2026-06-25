@@ -101,6 +101,8 @@ String pressure;             // 大氣壓力
 String humidity;             // 溼度
 bool   weatherValid = false; // 此次抓取是否成功
 
+void set_rgb_by_weather(String main);   // 函式原型宣告（實作在後面第6區）
+
 void get_weather_data(int cityIndex)
 {
   if (WiFi.status() != WL_CONNECTED)   // 若斷線則重新連線
