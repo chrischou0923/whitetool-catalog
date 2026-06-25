@@ -7,9 +7,10 @@
  *
  * 基本功能：
  *   - 自訂 10 個城市 (索引 0~9)
- *   - 數字鍵 0~9       ：對應切換到該城市，顯示天氣訊息
+ *   - 數字鍵 0~9       ：切換到該城市，自動輪播「時間 + 天氣」訊息(3 頁交替)
  *   - PREV / NEXT 鍵   ：切換前一個 / 下一個城市，在 0~9 之間循環
- *   - VOL+ / VOL- 鍵   ：切換「天氣訊息」與「時間訊息」兩種顯示
+ *   - VOL+ 鍵          ：只顯示「天氣訊息」(兩頁交替)
+ *   - VOL- 鍵          ：只顯示「時間訊息」
  *   - EQ 鍵            ：顯示當下日期時間，時間每秒更新一次
  *   天氣訊息一個畫面顯示不下時，會自動以兩個頁面交替顯示
  *
@@ -216,8 +217,12 @@ const int IR_RECEIVE_PIN = 15;          // 紅外線接收器接腳
 //=============================================================================
 // 8) 顯示模式
 //=============================================================================
-enum DisplayMode { MODE_WEATHER, MODE_TIME, MODE_DATETIME };
-DisplayMode mode = MODE_WEATHER;        // 預設顯示天氣
+// MODE_AUTO    ：數字鍵 0~9 / PREV / NEXT 選城市後，自動輪播「時間 + 天氣」多頁
+// MODE_WEATHER ：VOL+ 只看天氣（兩頁交替）
+// MODE_TIME    ：VOL- 只看時間
+// MODE_DATETIME：EQ 顯示當下日期時間（每秒更新）
+enum DisplayMode { MODE_AUTO, MODE_WEATHER, MODE_TIME, MODE_DATETIME };
+DisplayMode mode = MODE_AUTO;           // 預設自動輪播時間+天氣
 
 // 取得本地時間字串
 bool get_time_strings(String &dateStr, String &timeStr)
@@ -236,6 +241,36 @@ bool get_time_strings(String &dateStr, String &timeStr)
 // 9) 畫面更新
 //=============================================================================
 int  weatherPage = 0;                   // 天氣訊息的頁面 (0/1 交替)
+int  autoPage    = 0;                   // 自動輪播頁面 (0=時間, 1=天氣1, 2=天氣2)
+const int AUTO_PAGE_COUNT = 3;          // 自動輪播共 3 頁
+
+// 自動輪播：把「時間」與「天氣」訊息分成 3 頁交替顯示（規格要求）
+void show_auto()
+{
+  String name = String(cities[currentCity].displayName);
+  if (autoPage == 0)                    // 第 1 頁：城市 + 時間（每秒更新）
+  {
+    String d, t;
+    lcd_line(0, name);
+    if (get_time_strings(d, t)) lcd_line(1, t);
+    else                        lcd_line(1, "no time yet");
+  }
+  else if (!weatherValid)               // 天氣還沒抓到
+  {
+    lcd_line(0, name);
+    lcd_line(1, "loading...");
+  }
+  else if (autoPage == 1)               // 第 2 頁：天氣分類 + 溫度 + 溼度
+  {
+    lcd_line(0, name + " " + weatherMain);
+    lcd_line(1, "T:" + temp + "C H:" + humidity + "%");
+  }
+  else                                  // 第 3 頁：天氣概況 + 大氣壓力
+  {
+    lcd_line(0, weatherDescription);
+    lcd_line(1, "P:" + pressure + "hPa");
+  }
+}
 
 void show_weather()
 {
@@ -286,6 +321,7 @@ void update_display()
 {
   switch (mode)
   {
+    case MODE_AUTO:     show_auto();     break;
     case MODE_WEATHER:  show_weather();  break;
     case MODE_TIME:     show_time();     break;
     case MODE_DATETIME: show_datetime(); break;
@@ -299,7 +335,7 @@ void handle_key(uint8_t cmd)
 {
   switch (cmd)
   {
-    // 數字鍵 0~9：直接切換城市，並顯示天氣
+    // 數字鍵 0~9：切換到對應城市，並自動輪播「時間 + 天氣」訊息
     case KEY_0: currentCity = 0; goto pickCity;
     case KEY_1: currentCity = 1; goto pickCity;
     case KEY_2: currentCity = 2; goto pickCity;
@@ -311,17 +347,16 @@ void handle_key(uint8_t cmd)
     case KEY_8: currentCity = 8; goto pickCity;
     case KEY_9: currentCity = 9; goto pickCity;
     pickCity:
-      mode = MODE_WEATHER;
-      weatherPage = 0;
+      mode = MODE_AUTO; autoPage = 0;    // 進入自動輪播，從時間頁開始
       Serial.printf("Select city %d: %s\n", currentCity, cities[currentCity].displayName);
       get_weather_data(currentCity);     // 抓取新城市的天氣
       update_display();
       break;
 
-    // NEXT：下一個城市（0~9 循環）
+    // NEXT：下一個城市（0~9 循環），同樣自動輪播時間+天氣
     case KEY_NEXT:
       currentCity = (currentCity + 1) % CITY_COUNT;
-      mode = MODE_WEATHER; weatherPage = 0;
+      mode = MODE_AUTO; autoPage = 0;
       get_weather_data(currentCity);
       update_display();
       break;
@@ -329,15 +364,20 @@ void handle_key(uint8_t cmd)
     // PREV：上一個城市（0~9 循環）
     case KEY_PREV:
       currentCity = (currentCity - 1 + CITY_COUNT) % CITY_COUNT;
-      mode = MODE_WEATHER; weatherPage = 0;
+      mode = MODE_AUTO; autoPage = 0;
       get_weather_data(currentCity);
       update_display();
       break;
 
-    // VOL+ / VOL-：切換「天氣」與「時間」兩種顯示
+    // VOL+：只看「天氣」訊息（兩頁交替）
     case KEY_VOL_UP:
+      mode = MODE_WEATHER; weatherPage = 0;
+      update_display();
+      break;
+
+    // VOL-：只看「時間」訊息
     case KEY_VOL_DOWN:
-      mode = (mode == MODE_WEATHER) ? MODE_TIME : MODE_WEATHER;
+      mode = MODE_TIME;
       update_display();
       break;
 
@@ -405,13 +445,21 @@ void loop()
 
   unsigned long now = millis();
 
-  // (2) 每 1 秒：時間/日期時間模式要更新；天氣模式則兩頁交替
+  // (2) 每 1 秒更新畫面（時間才會每秒跳動）；每 3 秒換一頁（方便閱讀）
+  static int tickCount = 0;
   if (now - lastTickMillis >= 1000)
   {
     lastTickMillis = now;
-    if (mode == MODE_WEATHER)
-      weatherPage = (weatherPage + 1) % 2;   // 天氣兩頁交替
-    update_display();                        // 重新整理畫面（時間每秒更新）
+    tickCount++;
+    if (tickCount >= 3)                       // 每 3 秒換頁
+    {
+      tickCount = 0;
+      if (mode == MODE_AUTO)
+        autoPage = (autoPage + 1) % AUTO_PAGE_COUNT;   // 時間+天氣 3 頁輪播
+      else if (mode == MODE_WEATHER)
+        weatherPage = (weatherPage + 1) % 2;           // 天氣兩頁交替
+    }
+    update_display();                          // 重新整理畫面（時間每秒更新）
   }
 
   // (3) 每 10 分鐘自動刷新一次目前城市的天氣
