@@ -419,6 +419,7 @@ void setup()
 
   // 紅外線接收器初始化
   IrReceiver.begin(IR_RECEIVE_PIN, ENABLE_LED_FEEDBACK);
+  Serial.printf("IR receiver ready on GPIO%d. 請按遙控器，會印出每顆鍵的代碼。\n", IR_RECEIVE_PIN);
 
   // WiFi 連線
   connect_to_wifi();
@@ -436,7 +437,12 @@ void loop()
   // (1) 處理紅外線遙控器按鍵
   if (IrReceiver.decode())
   {
+    // ---- 除錯 log：把收到的紅外線訊號完整印出來 ----
+    Serial.println("---- IR signal ----");
+    IrReceiver.printIRResultShort(&Serial);   // 印出協定、位址、指令、是否 repeat
     uint8_t cmd = IrReceiver.decodedIRData.command;
+    Serial.printf(">> command = 0x%02X (%d)\n", cmd, cmd);  // 這就是要填進 KEY_* 的值
+
     // 過濾 NEC 長按重複碼 (repeat)，0 通常為雜訊
     if (cmd != 0 && !(IrReceiver.decodedIRData.flags & IRDATA_FLAGS_IS_REPEAT))
       handle_key(cmd);
